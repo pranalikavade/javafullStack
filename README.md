@@ -1,3 +1,3 @@
-# javafullStack
+cd# javafullStack
 this is my repository
-pranali kavade
+pranali (kavade)
