@@ -1,0 +1,21 @@
+import java.util.Arrays;
+
+public class GenericReverser {
+    public static <T> void reverseArrayData(T[] arr) {
+        int start = 0, end = arr.length - 1;
+        while (start < end) {
+            T temp = arr[start];
+            arr[start] = arr[end];
+            arr[end] = temp;
+            start++;
+            end--;
+        }
+    }
+
+    public static void main(String[] args) {
+        String[] words = {"hello", "world", "java", "reverse"};
+        System.out.println(Arrays.toString(words));
+        reverseArrayData(words);
+        System.out.println(Arrays.toString(words));
+    }
+}
