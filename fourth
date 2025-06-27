@@ -1,0 +1,20 @@
+public class SortChecker {
+
+  
+    public static <T extends Comparable<? super T>> boolean isNonDescending(T[] arr) {
+        for (int i = 1; i < arr.length; i++) {
+            if (arr[i - 1].compareTo(arr[i]) > 0) {
+                return false;  // early exit if any previous element is greater
+            }
+        }
+        return true;
+    }
+
+    public static void main(String[] args) {
+        // Only one array used here
+        Integer[] arr = {2, 2, 5, 7, 7};
+
+        boolean sorted = isNonDescending(arr);
+        System.out.println("Is the array non-descending? " + sorted);
+    }
+}
