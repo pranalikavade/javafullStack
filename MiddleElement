@@ -1,0 +1,14 @@
+public class ArrayUtils {
+    public static <T> T middle(T[] array) {
+        if (array == null || array.length == 0) {
+            throw new IllegalArgumentException("Array must not be null or empty");
+        }
+        
+        return array[array.length / 2];
+    }
+
+    public static void main(String[] args) {
+        String[] names = {"Alice", "Bob", "Charlie", "David", "Eve"};
+        System.out.println("Middle of names: " + ArrayUtils.middle(names)); 
+    }
+}
