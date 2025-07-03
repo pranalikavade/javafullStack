@@ -1,0 +1,164 @@
+CREATE TABLE category1 (
+  category_id SERIAL PRIMARY KEY,
+  name VARCHAR(25) NOT NULL,
+  last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+INSERT INTO category1 (category_id, name, last_update) VALUES
+(1, 'Action', '2024-01-01 10:00:00'),
+
+2)
+CREATE TABLE city (
+  city_id SERIAL PRIMARY KEY,
+  city VARCHAR(50) NOT NULL,
+  country_id INTEGER NOT NULL,
+  last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (country_id) REFERENCES country(country_id)
+);
+
+INSERT INTO city (city_id, city, country_id, last_update) VALUES
+(1, 'Mumbai', 1, '2025-07-01 10:05:00');
+
+3)
+CREATE TABLE address (
+  address_id SERIAL PRIMARY KEY,
+  address VARCHAR(50) NOT NULL,
+  address2 VARCHAR(50),
+  district VARCHAR(20) NOT NULL,
+  city_id INTEGER NOT NULL,
+  postal_code VARCHAR(10),
+  phone VARCHAR(20) NOT NULL,
+  last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (city_id) REFERENCES city(city_id)
+);
+
+INSERT INTO address (address_id, address, address2, district, city_id, postal_code, phone, last_update) VALUES
+(1, '123 MG Road', 'Near Park', 'South', 1, '400001', '9876543210', '2025-07-01 10:10:00');
+
+4)
+CREATE TABLE staff (
+  staff_id SERIAL PRIMARY KEY,
+  first_name VARCHAR(45) NOT NULL,
+  last_name VARCHAR(45) NOT NULL,
+  address_id INTEGER NOT NULL,
+  email VARCHAR(50),
+  store_id INTEGER NOT NULL,
+  active BOOLEAN NOT NULL DEFAULT TRUE,
+  username VARCHAR(16) NOT NULL,
+  password VARCHAR(40),
+  last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  picture BYTEA,
+  FOREIGN KEY (address_id) REFERENCES address(address_id)
+);
+
+INSERT INTO staff (
+  staff_id, first_name, last_name, address_id, email, store_id, active, username, password, last_update, picture
+) VALUES (
+  1, 'Amit', 'Sharma', 1, 'amit@store.com', 1, TRUE, 'amit123', 'pass@123', '2025-07-01 10:15:00', NULL
+);
+
+5)
+CREATE TABLE customer (
+  customer_id SERIAL PRIMARY KEY,
+  store_id INTEGER NOT NULL,
+  first_name VARCHAR(45) NOT NULL,
+  last_name VARCHAR(45) NOT NULL,
+  email VARCHAR(50),
+  address_id INTEGER NOT NULL,
+  active BOOLEAN NOT NULL DEFAULT TRUE,
+  create_date DATE NOT NULL,
+  last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (address_id) REFERENCES address(address_id)
+);
+
+INSERT INTO customer (
+  customer_id, store_id, first_name, last_name, email, address_id, active, create_date, last_update
+) VALUES (
+  1, 1, 'Rahul', 'Verma', 'rahul@example.com', 1, TRUE, '2025-07-01', '2025-07-01 10:20:00'
+);
+6)
+CREATE TABLE film (
+  film_id SERIAL PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  description TEXT,
+  release_year INTEGER,
+  language_id INTEGER NOT NULL,
+  rental_duration INTEGER NOT NULL DEFAULT 3,
+  rental_rate DECIMAL(4,2) NOT NULL DEFAULT 4.99,
+  length INTEGER,
+  replacement_cost DECIMAL(5,2) NOT NULL DEFAULT 19.99,
+  rating VARCHAR(10) CHECK (rating IN ('G', 'PG', 'PG-13', 'R', 'NC-17')),
+  last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  special_features TEXT[],
+  fulltext TSVECTOR NOT NULL
+);
+
+INSERT INTO film (
+  film_id, title, description, release_year, language_id, rental_duration,
+  rental_rate, length, replacement_cost, rating, last_update,
+  special_features, fulltext
+) VALUES (
+  1, 'Chase Begins', 'An action thriller movie.', 2022, 1, 5,
+  4.99, 120, 19.99, 'PG-13', '2025-07-01 10:30:00',
+  ARRAY['Deleted Scenes', 'Behind the Scenes'], to_tsvector('Chase Begins')
+);
+7)
+CREATE TABLE film_category (
+  film_id INTEGER NOT NULL,
+  category_id INTEGER NOT NULL,
+  last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (film_id, category_id),
+  FOREIGN KEY (film_id) REFERENCES film(film_id),
+  FOREIGN KEY (category_id) REFERENCES category(category_id)
+);
+
+INSERT INTO film_category (film_id, category_id, last_update) VALUES
+(1, 1, '2025-07-01 10:35:00');
+8)
+CREATE TABLE inventory (
+  inventory_id SERIAL PRIMARY KEY,
+  film_id INTEGER NOT NULL,
+  store_id INTEGER NOT NULL,
+  last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (film_id) REFERENCES film(film_id)
+);
+
+INSERT INTO inventory (inventory_id, film_id, store_id, last_update) VALUES
+(1, 1, 1, '2025-07-01 10:40:00');
+9)
+CREATE TABLE rental (
+  rental_id SERIAL PRIMARY KEY,
+  rental_date TIMESTAMP NOT NULL,
+  inventory_id INTEGER NOT NULL,
+  customer_id INTEGER NOT NULL,
+  return_date TIMESTAMP,
+  staff_id INTEGER NOT NULL,
+  last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (inventory_id) REFERENCES inventory(inventory_id),
+  FOREIGN KEY (customer_id) REFERENCES customer(customer_id),
+  FOREIGN KEY (staff_id) REFERENCES staff(staff_id)
+);
+
+INSERT INTO rental (
+  rental_id, rental_date, inventory_id, customer_id, return_date, staff_id, last_update
+) VALUES (
+  1, '2025-07-01 11:00:00', 1, 1, '2025-07-05 11:00:00', 1, '2025-07-01 11:05:00'
+);
+10)
+CREATE TABLE payment (
+  payment_id SERIAL PRIMARY KEY,
+  customer_id INTEGER NOT NULL,
+  staff_id INTEGER NOT NULL,
+  rental_id INTEGER,
+  amount DECIMAL(5,2) NOT NULL,
+  payment_date TIMESTAMP NOT NULL,
+  FOREIGN KEY (customer_id) REFERENCES customer(customer_id),
+  FOREIGN KEY (staff_id) REFERENCES staff(staff_id),
+  FOREIGN KEY (rental_id) REFERENCES rental(rental_id) ON DELETE SET NULL
+);
+
+INSERT INTO payment (
+  payment_id, customer_id, staff_id, rental_id, amount, payment_date
+) VALUES (
+  1, 1, 1, 1, 9.99, '2025-07-01 11:10:00'
+);
+
